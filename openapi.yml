@@ -1,0 +1,299 @@
+openapi: '3.0.2'
+info:
+  title: API Governance
+  description: API to fetch information on votings from the database
+  version: '1.0'
+servers:
+  - url: https://hohoyo.org
+    description: Gov Data
+paths:
+  /chains/{chain}:
+    get:
+      summary: Get Details for a specific chain
+      parameters:
+        - in: path
+          name: chain
+          required: true
+          schema:
+            type: string
+          description: The Name of the chain
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chain'
+
+  /chains/{chain_name}/proposals:
+    get:
+      summary: Get all proposals for a specific chain
+      parameters:
+        - in: path
+          name: chain_name
+          required: true
+          schema:
+            type: string
+          description: The name of the chain
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Proposal'
+
+  /chains/{chainName}/proposals/{proposalId}:
+    get:
+      summary: Get a specific proposals for a specific chain
+      parameters:
+        - in: path
+          name: chainName
+          required: true
+          schema:
+            type: string
+          description: The name of the chain
+        - in: path
+          name: proposalId
+          required: true
+          schema:
+            type: integer
+          description: The Id of the Proposal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Proposal'
+  
+  /user/{address}:
+    get:
+      summary: Get a specific UserId
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: The user address
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserId'
+
+  /user/{address}/userVotes:
+    get:
+      summary: Get all votes for a specific wallet
+      parameters:
+        - in: path
+          name: wallet_addr
+          required: true
+          schema:
+            type: string
+          description: The address of the wallet
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserVotes'
+  
+  /chains/{chainName}/validators/{proposalId}:
+    get:
+      summary: Get all Validators for a specific proposal
+      parameters:
+        - in: path
+          name: chainName
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: proposalId
+          required: true
+          schema:
+            type: integer
+          description: The id of the proposal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Validator'
+  
+  /chains/{chainName}/delegations/{proposalId}:
+    get:
+      summary: Get all delegations for a specific proposal
+      parameters:
+        - in: path
+          name: chainName
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: proposalId
+          required: true
+          schema:
+            type: integer
+          description: The id of the proposal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Delegation'
+
+components:
+  schemas:
+    Chain:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the chain
+        name:
+          type: string
+          description: The name of the chain
+
+    Proposal:
+      type: object
+      properties:
+        proposal_id:
+          type: integer
+          description: The unique identifier of the proposal
+        chain_id:
+          type: integer
+          description: The unique identifier of the Chain
+        time:
+          type: string
+          format: date-time
+          description: The submission time of the proposal
+        status:
+          type: string
+          description: The status of the proposal
+        yes_votes: 
+          type: integer
+          description: The number of "yes" votes
+        no_votes:
+          type: integer
+          description: The number of "no" votes
+        noWithVeto_votes:
+            type: integer
+            description: The number of "no with veto" votes
+        abstain_votes:
+            type: integer
+            description: The number of "abstain" votes
+        info: 
+          type: string
+          description: Basic information on the proposal
+        title:
+          type: string
+          description: The title of the proposal
+        block_height:
+          type: integer
+          description: Last block while the prop was active
+        bonded_tokens:
+          type: integer
+          description: Bonded tokens at the end of the proposal
+        unbonded_tokens:
+          type: integer
+          description: Unbonded tokens at the end of the proposal
+
+    UserId:
+      type: object
+      properties:
+        user_id: 
+          type: integer
+          description: The unique identifier of the User
+        wallet_addr: 
+          type: string
+          description: Unique address on chain
+
+    UserVotes:
+      type: object
+      properties:
+        vote_id: 
+          type: integer
+          description: The unique itenfier of the vote
+        user_id: 
+          type: integer
+          description: The unique identifier of the user
+        proposal_id:
+          type: integer
+          description: the unique identifier of the proposal
+        vote_direction:
+          type: string
+          description: Direction of the vote
+        weight: 
+          type: integer
+          description: Weight of the vote
+
+    Validator:
+      type: object
+      properties:
+        validator_id: 
+          type: integer
+          description: Unique Id of the Validator
+        name:
+          type: string
+          description: Name of the Validator
+        info:
+          type: string
+          description: Validator information
+        website:
+          type: string
+          description: Website of the Validator
+        commission: 
+          type: integer
+          description: Commission 
+        operator_addr:
+          type: string
+          description: Operator address
+        stake:
+          type: integer
+          description: Total stake on the Validator
+        vote_direction:
+          type: string
+          description: Vote direction
+
+    Delegation:
+      type: object
+      properties:
+        user_id: 
+          type: integer
+          description: Unique Id of the User
+        vote_direction:
+          type: string
+          description: Direction of the Vote
+        weight:
+          type: string
+          description: Weight of the vote
+        validator_id:
+          type: integer
+          description: Id of the Validator
+        delegated_amount: 
+          type: integer
+          description: Delegated tokens to the Validator 
+
+              
+        
